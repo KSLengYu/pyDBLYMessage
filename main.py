@@ -99,7 +99,7 @@ def get_client_ip(request: Request) -> str:
         return x_forwarded_for.split(",")[0].strip()  # 取第一个IP（避免代理转发多IP）
     return request.client.host  # 本地测试时直接获取IP
 
-# ---------------------- 关键修改：替换IP定位逻辑（无需密钥，使用ip-api.com免费接口）----------------------
+# ---------------------- IP定位逻辑（无需密钥，使用ip-api.com免费接口）----------------------
 def get_location_from_ip(ip: str) -> str:
     try:
         # 免费无密钥接口：ip-api.com（支持IPv4/IPv6，无需注册）
@@ -396,13 +396,14 @@ async def unbind_qq(current_user: Dict[str, Any] = Depends(get_current_user)):
         return JSONResponse(status_code=500, content={"detail": "QQ解绑失败"})
     return JSONResponse(content={"detail": "QQ解绑成功"})
 
-# 留言接口：发布留言/回复
+# ---------------------- 关键修复：调整send_message函数参数顺序 ----------------------
+# 错误原因：有默认值的参数（parent_id、current_user）必须放在无默认值参数（content、request）后面
 @app.post("/message/send")
 async def send_message(
-    content: str = Form(...),
-    parent_id: Optional[str] = Form(None),  # 父留言ID（回复时传递）
-    request: Request,
-    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+    content: str = Form(...),  # 无默认值 → 放在前面
+    request: Request,          # 无默认值 → 放在前面
+    parent_id: Optional[str] = Form(None),  # 有默认值 → 放在后面
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)  # 有默认值 → 放在后面
 ):
     # 1. 验证留言内容不为空
     if not content.strip():
