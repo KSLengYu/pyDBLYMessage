@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 注册</title>
+    <style>
+        /* 复用统一CSS变量，保持风格一致 */
+        :root {
+            --primary: #2196F3;
+            --secondary: #1976D2;
+            --dark-bg: #0F172A;
+            --card-bg: #1E293B;
+            --text-light: #F8FAFC;
+            --text-gray: #94A3B8;
+            --border: #334155;
+            --shadow: 0 0 12px rgba(33, 150, 243, 0.2);
+            --success: #22C55E;
+            --error: #EF4444;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background-image: 
+                radial-gradient(circle at center, rgba(33, 150, 243, 0.08) 0%, transparent 50%);
+        }
+        /* 进入动画 */
+        .register-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .logo i {
+            font-size: 2.2rem;
+        }
+        .card-header p {
+            color: var(--text-gray);
+            font-size: 1rem;
+        }
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        .form-control {
+            width: 100%;
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        /* 验证码输入组 */
+        .code-group {
+            display: flex;
+            gap: 1rem;
+        }
+        .code-group .form-control {
+            flex: 1;
+        }
+        .code-btn {
+            width: 120px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .code-btn:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .code-btn:hover:not(:disabled) {
+            background-color: var(--secondary);
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+        }
+        /* 提示框 */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .alert.success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            display: block;
+        }
+        .alert.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            display: block;
+        }
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        .btn:hover {
+            background-color: var(--secondary);
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+        }
+        /* QQ绑定区域 */
+        .qq-bind-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border);
+        }
+        .qq-bind-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-gray);
+        }
+        .qq-bind-form {
+            display: none;
+            margin-bottom: 1.5rem;
+        }
+        .qq-bind-form.active {
+            display: block;
+        }
+        .toggle-bind-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 0 auto 1rem;
+        }
+        .toggle-bind-btn:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+        /* 登录链接 */
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-gray);
+        }
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .login-link a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+        /* 小提示 */
+        .tip {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+        }
+    </style>
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="register-card">
+        <div class="card-header">
+            <div class="logo">
+                <<<i class="fas fa-comment-dots"></</</i>
+                <span>留言板</span>
+            </div>
+            <p>账号注册</p>
+        </div>
+
+        <!-- 提示框 -->
+        <div class="alert success" id="success-alert">验证码已发送至邮箱，请查收</div>
+        <div class="alert error" id="error-alert">邮箱已被注册</div>
+
+        <!-- 注册表单 -->
+        <form id="register-form" onsubmit="return handleRegisterSubmit()">
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="请输入你的邮箱" required>
+            </div>
+            <div class="form-group code-group">
+                <input type="text" id="code" name="code" class="form-control" placeholder="验证码" required>
+                <button type="button" id="send-code-btn" class="code-btn" onclick="sendVerificationCode()">获取验证码</button>
+            </div>
+            <div class="form-group">
+                <label for="nickname">昵称</label>
+                <input type="text" id="nickname" name="nickname" class="form-control" placeholder="请设置你的昵称" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="请设置密码（至少6位）" required>
+                <div class="tip">密码长度至少6位，建议包含字母和数字</div>
+            </div>
+
+            <!-- QQ绑定区域 -->
+            <div class="qq-bind-section">
+                <div class="qq-bind-header">
+                    <button type="button" class="toggle-bind-btn" id="toggle-bind-btn" onclick="toggleQQBindForm()">
+                        <<i class="fab fa-qq"></</i> 绑定QQ账号（可选）
+                    </button>
+                </div>
+                <div class="qq-bind-form" id="qq-bind-form">
+                    <div class="form-group">
+                        <label for="qq-number">QQ号</label>
+                        <input type="text" id="qq-number" name="qq_number" class="form-control" placeholder="请输入你的QQ号">
+                    </div>
+                    <div class="form-group">
+                        <label for="qq-nickname">QQ昵称</label>
+                        <input type="text" id="qq-nickname" name="qq_nickname" class="form-control" placeholder="请输入你的QQ昵称">
+                    </div>
+                    <div class="form-group">
+                        <label for="qq-avatar">QQ头像URL</label>
+                        <input type="url" id="qq-avatar" name="qq_avatar" class="form-control" placeholder="请输入QQ头像图片URL">
+                        <div class="tip">可在QQ资料页获取头像URL，或使用默认头像</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">完成注册</button>
+        </form>
+
+        <div class="login-link">
+            已有账号？<a href="/login">立即登录</a>
+        </div>
+    </div>
+
+    <script>
+        // 隐藏所有提示框
+        function hideAllAlerts() {
+            document.getElementById('success-alert').classList.remove('success');
+            document.getElementById('error-alert').classList.remove('error');
+        }
+
+        // 发送验证码
+        let countdown = 0;
+        async function sendVerificationCode() {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                hideAllAlerts();
+                document.getElementById('error-alert').textContent = '请先输入邮箱';
+                document.getElementById('error-alert').classList.add('error');
+                return;
+            }
+
+            // 验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                hideAllAlerts();
+                document.getElementById('error-alert').textContent = '请输入有效的邮箱地址';
+                document.getElementById('error-alert').classList.add('error');
+                return;
+            }
+
+            // 开始倒计时
+            const codeBtn = document.getElementById('send-code-btn');
+            codeBtn.disabled = true;
+            countdown = 60;
+            codeBtn.textContent = `重新发送(${countdown}s)`;
+
+            const timer = setInterval(() => {
+                countdown--;
+                codeBtn.textContent = `重新发送(${countdown}s)`;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    codeBtn.disabled = false;
+                    codeBtn.textContent = '获取验证码';
+                }
+            }, 1000);
+
+            // 发送请求
+            try {
+                const response = await fetch('/register/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `email=${encodeURIComponent(email)}`
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    hideAllAlerts();
+                    document.getElementById('success-alert').classList.add('success');
+                    document.getElementById('success-alert').textContent = data.detail;
+                } else {
+                    hideAllAlerts();
+                    document.getElementById('error-alert').classList.add('error');
+                    document.getElementById('error-alert').textContent = data.detail;
+                    // 停止倒计时
+                    clearInterval(timer);
+                    codeBtn.disabled = false;
+                    codeBtn.textContent = '获取验证码';
+                }
+            } catch (error) {
+                hideAllAlerts();
+                document.getElementById('error-alert').classList.add('error');
+                document.getElementById('error-alert').textContent = '验证码发送失败，请重试';
+                // 停止倒计时
+                clearInterval(timer);
+                codeBtn.disabled = false;
+                codeBtn.textContent = '获取验证码';
+            }
+        }
+
+        // 切换QQ绑定表单显示/隐藏
+        function toggleQQBindForm() {
+            const form = document.getElementById('qq-bind-form');
+            const btn = document.getElementById('toggle-bind-btn');
+            form.classList.toggle('active');
+            if (form.classList.contains('active')) {
+                btn.innerHTML = '<<i class="fab fa-qq"></</i> 收起QQ绑定';
+            } else {
+                btn.innerHTML = '<<i class="fab fa-qq"></</i> 绑定QQ账号（可选）';
+            }
+        }
+
+        // 处理注册表单提交
+        function handleRegisterSubmit() {
+            hideAllAlerts();
+            const password = document.getElementById('password').value;
+            if (password.length < 6) {
+                document.getElementById('error-alert').textContent = '密码长度至少6位';
+                document.getElementById('error-alert').classList.add('error');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

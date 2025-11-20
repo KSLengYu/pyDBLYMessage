@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 登录</title>
+    <style>
+        /* 复用首页CSS变量，保持风格统一 */
+        :root {
+            --primary: #2196F3;
+            --secondary: #1976D2;
+            --dark-bg: #0F172A;
+            --card-bg: #1E293B;
+            --text-light: #F8FAFC;
+            --text-gray: #94A3B8;
+            --border: #334155;
+            --shadow: 0 0 12px rgba(33, 150, 243, 0.2);
+            --error: #EF4444;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background-image: 
+                radial-gradient(circle at center, rgba(33, 150, 243, 0.08) 0%, transparent 50%);
+        }
+        /* 进入动画 */
+        .login-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .logo i {
+            font-size: 2.2rem;
+        }
+        .card-header p {
+            color: var(--text-gray);
+            font-size: 1rem;
+        }
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        .form-control {
+            width: 100%;
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        /* 错误提示 */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            display: none;
+        }
+        .alert.show {
+            display: block;
+        }
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        .btn:hover {
+            background-color: var(--secondary);
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+        }
+        /* 注册链接 */
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-gray);
+        }
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .register-link a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+    </style>
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-card">
+        <div class="card-header">
+            <div class="logo">
+                <<i class="fas fa-comment-dots"></</i>
+                <span>留言板</span>
+            </div>
+            <p>账号登录</p>
+        </div>
+
+        <!-- 错误提示 -->
+        <div class="alert" id="error-alert">邮箱或密码错误</div>
+
+        <!-- 登录表单 -->
+        <form action="/login" method="post" onsubmit="return handleLoginSubmit()">
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="请输入你的邮箱" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="请输入你的密码" required>
+            </div>
+            <button type="submit" class="btn">登录</button>
+        </form>
+
+        <div class="register-link">
+            还没有账号？<a href="/register">立即注册</a>
+        </div>
+    </div>
+
+    <script>
+        // 处理登录表单提交（显示错误提示）
+        function handleLoginSubmit() {
+            // 清除之前的错误提示
+            document.getElementById('error-alert').classList.remove('show');
+            return true;
+        }
+
+        // 从URL参数获取错误信息（后端跳转时传递）
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            document.getElementById('error-alert').textContent = error;
+            document.getElementById('error-alert').classList.add('show');
+        }
+    </script>
+</body>
+</html>

@@ -1,1 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 首页</title>
+    <style>
+        /* 基础样式：科幻简洁风（深色背景+蓝色强调） */
+        :root {
+            --primary: #2196F3;    /* 主色（蓝色，适配认证勾） */
+            --secondary: #1976D2;  /* 辅助色 */
+            --dark-bg: #0F172A;    /* 深色背景 */
+            --card-bg: #1E293B;    /* 卡片背景 */
+            --text-light: #F8FAFC; /* 浅色文字 */
+            --text-gray: #94A3B8;  /* 灰色文字 */
+            --border: #334155;     /* 边框色 */
+            --shadow: 0 0 12px rgba(33, 150, 243, 0.2); /* 科幻阴影 */
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(33, 150, 243, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(33, 150, 243, 0.05) 0%, transparent 20%);
+        }
+        /* 进入动画：淡入+轻微位移 */
+        .entry-animate {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 导航栏 */
+        nav {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation-delay: 0.1s;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo i {
+            font-size: 1.6rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .nav-links a:hover {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--primary);
+        }
+        .nav-links a.active {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            gap: 2rem;
+        }
+        /* 留言板区域 */
+        .message-section {
+            flex: 3;
+            animation-delay: 0.3s;
+        }
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+        /* 留言发布表单 */
+        .message-form {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .message-form textarea {
+            width: 100%;
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            color: var(--text-light);
+            min-height: 100px;
+            resize: vertical;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .message-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .guest-tip {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.7rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: var(--secondary);
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+        }
+        /* 留言列表 */
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .message-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        .message-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
+        }
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border);
+        }
+        .user-info {
+            flex: 1;
+        }
+        .username {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .verified-badge {
+            color: var(--primary);
+            font-size: 1.2rem;
+            /* 蓝色认证勾（X社交风格） */
+        }
+        .message-meta {
+            display: flex;
+            gap: 1.2rem;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        .message-content {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .message-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            color: var(--primary);
+        }
+        .delete-btn {
+            color: #EF4444;
+        }
+        .delete-btn:hover {
+            color: #DC2626;
+        }
+        /* 回复区域 */
+        .replies {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-left: 2rem;
+        }
+        .reply-form {
+            margin-top: 1rem;
+            display: none;
+        }
+        .reply-form.active {
+            display: block;
+        }
+        /* 侧边栏（更新日志） */
+        .sidebar {
+            flex: 1;
+            animation-delay: 0.5s;
+        }
+        .sidebar-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 4.5rem;
+        }
+        .log-item {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px dashed var(--border);
+        }
+        .log-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .log-version {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .log-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .log-content {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        /* 响应式设计（适配手机） */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+            .replies {
+                margin-left: 1rem;
+            }
+            .form-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+    <!-- 引入图标库（用于认证勾、按钮图标） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="entry-animate">
+        <div class="logo">
+            <<i class="fas fa-comment-dots"></</i>
+            <span>留言板</span>
+        </div>
+        <div class="nav-links">
+            {% if current_user %}
+                <a href="/" class="active">首页</a>
+                <a href="/profile">个人主页</a>
+                <a href="/logs">更新日志</a>
+                <a href="/logout">退出登录</a>
+            {% else %}
+                <a href="/login">登录</a>
+                <a href="/register">注册</a>
+                <a href="/logs">更新日志</a>
+            {% endif %}
+        </div>
+    </nav>
 
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 留言板区域 -->
+        <div class="message-section entry-animate">
+            <div class="section-header">
+                <h2>留言墙</h2>
+            </div>
+
+            <!-- 留言发布表单 -->
+            <div class="message-form">
+                <form action="/message/send" method="post">
+                    <textarea name="content" placeholder="分享你的想法...{% if not current_user %}（游客每日限发5条）{% endif %}" required></textarea>
+                    <div class="form-footer">
+                        {% if not current_user %}
+                            <div class="guest-tip"><<i class="fas fa-info-circle"></</i> 游客模式：每日最多发布5条留言</div>
+                        {% endif %}
+                        <button type="submit" class="btn">发布留言</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 留言列表 -->
+            <div class="message-list">
+                {% for message in messages %}
+                    {% if not message.parent_id %}<!-- 只显示主留言，回复在下方嵌套 -->
+                        <div class="message-card" id="msg-{{ message.id }}">
+                            <div class="message-header">
+                                <img src="{{ message.avatar }}" alt="用户头像" class="avatar">
+                                <div class="user-info">
+                                    <div class="username">
+                                        {{ message.username }}
+                                        {% if message.is_verified %}
+                                            <span class="verified-badge"><<i class="fas fa-check-circle"></</i></span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="message-meta">
+                                        <span><<i class="far fa-clock"></</i> {{ message.created_at[:19].replace('T', ' ') }}</span>
+                                        <span><<i class="fas fa-map-marker-alt"></</i> {{ message.location }}</span>
+                                        <span><<i class="fas fa-mobile-alt"></</i> {{ message.device_model }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message-content">{{ message.content }}</div>
+                            <div class="message-actions">
+                                <button type="button" class="action-btn" onclick="toggleReplyForm('{{ message.id }}')">
+                                    <<i class="fas fa-reply"></</i> 回复
+                                </button>
+                                {% if current_user and current_user.id == message.user_id %}
+                                    <button type="button" class="action-btn" onclick="withdrawMessage('{{ message.id }}')">
+                                        <<i class="fas fa-times-circle"></</i> 撤回
+                                    </button>
+                                {% endif %}
+                                {% if current_user and current_user.roles.name in ['super_admin', 'admin'] %}
+                                    <button type="button" class="action-btn" onclick="collapseMessage('{{ message.id }}')">
+                                        <<i class="fas fa-compress-alt"></</i> {{ '展开' if message.is_collapsed else '折叠' }}
+                                    </button>
+                                    <button type="button" class="action-btn delete-btn" onclick="deleteMessage('{{ message.id }}')">
+                                        <<i class="fas fa-trash"></</i> 删除
+                                    </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- 回复表单 -->
+                            <div class="reply-form" id="reply-form-{{ message.id }}">
+                                <form action="/message/send" method="post">
+                                    <input type="hidden" name="parent_id" value="{{ message.id }}">
+                                    <textarea name="content" placeholder="回复这条留言..." required></textarea>
+                                    <button type="submit" class="btn">发送回复</button>
+                                </form>
+                            </div>
+
+                            <!-- 子回复列表 -->
+                            <div class="replies" id="replies-{{ message.id }}">
+                                {% for reply in messages %}
+                                    {% if reply.parent_id == message.id and not reply.is_collapsed %}
+                                        <div class="message-card">
+                                            <div class="message-header">
+                                                <img src="{{ reply.avatar }}" alt="用户头像" class="avatar">
+                                                <div class="user-info">
+                                                    <div class="username">
+                                                        {{ reply.username }}
+                                                        {% if reply.is_verified %}
+                                                            <span class="verified-badge"><<i class="fas fa-check-circle"></</i></span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="message-meta">
+                                                        <span><<i class="far fa-clock"></</i> {{ reply.created_at[:19].replace('T', ' ') }}</span>
+                                                        <span><<i class="fas fa-map-marker-alt"></</i> {{ reply.location }}</span>
+                                                        <span><<i class="fas fa-mobile-alt"></</i> {{ reply.device_model }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="message-content">{{ reply.content }}</div>
+                                            <div class="message-actions">
+                                                {% if current_user and current_user.id == reply.user_id %}
+                                                    <button type="button" class="action-btn" onclick="withdrawMessage('{{ reply.id }}')">
+                                                        <<i class="fas fa-times-circle"></</i> 撤回
+                                                    </button>
+                                                {% endif %}
+                                                {% if current_user and current_user.roles.name in ['super_admin', 'admin'] %}
+                                                    <button type="button" class="action-btn delete-btn" onclick="deleteMessage('{{ reply.id }}')">
+                                                        <<i class="fas fa-trash"></</i> 删除
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 侧边栏（更新日志） -->
+        <div class="sidebar entry-animate">
+            <div class="sidebar-card">
+                <div class="section-header">
+                    <h2>更新日志</h2>
+                </div>
+                <div class="log-list">
+                    {% for log in logs %}
+                        <div class="log-item">
+                            <div class="log-version">{{ log.version }}</div>
+                            <div class="log-title">{{ log.title }}</div>
+                            <div class="log-content">{{ log.content|replace('\n', '<br>')|safe }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="/logs" class="action-btn" style="color: var(--primary);">查看全部日志 <<i class="fas fa-arrow-right"></</i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能脚本 -->
+    <script>
+        // 切换回复表单显示/隐藏
+        function toggleReplyForm(messageId) {
+            const form = document.getElementById(`reply-form-${messageId}`);
+            form.classList.toggle('active');
+        }
+
+        // 撤回留言
+        async function withdrawMessage(messageId) {
+            if (!confirm('确定要撤回这条留言吗？')) return;
+            try {
+                const response = await fetch(`/message/withdraw/${messageId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const data = await response.json();
+                alert(data.detail);
+                window.location.reload();
+            } catch (error) {
+                alert('撤回失败，请重试');
+            }
+        }
+
+        // 折叠/展开留言
+        async function collapseMessage(messageId) {
+            try {
+                const response = await fetch(`/message/collapse/${messageId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const data = await response.json();
+                alert(data.detail);
+                window.location.reload();
+            } catch (error) {
+                alert('操作失败，请重试');
+            }
+        }
+
+        // 删除留言（管理员）
+        async function deleteMessage(messageId) {
+            if (!confirm('确定要删除这条留言吗？删除后不可恢复！')) return;
+            try {
+                const response = await fetch(`/message/delete/${messageId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                const data = await response.json();
+                alert(data.detail);
+                window.location.reload();
+            } catch (error) {
+                alert('删除失败，请重试');
+            }
+        }
+    </script>
+</body>
+</html>
