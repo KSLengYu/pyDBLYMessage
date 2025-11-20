@@ -1,0 +1,8 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+supabase==2.3.0
+python-dotenv==1.0.0
+user-agents==2.2.0
+requests==2.31.0
+smtplib==0.1.1
+email==6.0.0
